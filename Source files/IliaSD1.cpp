@@ -1,13 +1,14 @@
 ﻿#include <iostream>
-#include "C:\Users\User\Desktop\Структурка\Лаба 1\Header files\DynamicArray.h"
+#include <string>
+#include "..\Header files\DynamicArray.h"
 #include <chrono>
-#include <boost/multiprecision/cpp_int.hpp>
+//#include <boost/multiprecision/cpp_int.hpp>
 
 using namespace std;
-using namespace boost::multiprecision;
+//using namespace boost::multiprecision;
 
 // 6 вариант
-cpp_int Factorial(int n)   //  Рекурсивная функция выполняется n раз => M(n) = O(n)
+/*cpp_int Factorial(int n)   //  Рекурсивная функция выполняется n раз => M(n) = O(n)
 {
     if (n == 0) // O(1)
     {
@@ -17,19 +18,17 @@ cpp_int Factorial(int n)   //  Рекурсивная функция выпол�
     {
         return n * Factorial(n - 1); // O(1 + (n-1)) == O(n)
     }
-}
+}*/
 // T(n) = O(n)
 // M(n) = O(n)
 
-string manuals[] = { "Create dynamic array\n", "Write array\n", "Add element\n",
-                     "Remove element\n", "Get size\n", "Get capacity\n", "Get element\n",
-                     "Sort array\n", "Search element\n", "Exit\n", "Remove by index\n",
-                     "Remove by value\n", "Linear search\n",
-                     "Binary search(for sorted array)\n", "Delete dynamic array\n" };
 
-DynamicArray* dynamicArray;
-
-void WriteManual(int* manualsIndexes, int length)
+//TODO: comments +
+//! \brief Выводит инструкции в консоль из manuals по индексам из manualsIndexes.
+//! \param manuals Список со всеми инструкциями.
+//! \param manualsIndexes Список с индексами для списка с инструкциями.
+//! \param length Длина массива manualsIndexes.
+void WriteManual(string* manuals, int* manualsIndexes, int length)
 {
     cout << "Manual:\n";
 
@@ -39,7 +38,10 @@ void WriteManual(int* manualsIndexes, int length)
     }
 }
 
-void WriteArray()
+//TODO: comments +
+//! \brief Выводит в консоль массив из структуры.
+//! \param dynamicArray Структура динамического массива.
+void WriteArray(DynamicArray*& dynamicArray)
 {
     int i;
     cout << "Array: ";
@@ -49,108 +51,158 @@ void WriteArray()
     }
 }
 
-void RequestExecution(int choice, int* manualsIndexes, int size)
+//! \brief Выводит сообщение в консоль и записывает введённое значение в переменную.
+//! \param message Сообщение, которое выведется в консоль.
+//! \param varriable Переменная в которую впишется введённое значение из консоли.
+void InputWithMessage(string message, int& varriable)
 {
-    if (choice < size)
+    cout << message;
+    cin >> varriable;
+}
+
+//! \brief Проверяет входит ли значение в заданную область.
+//! \param min Нижняя граница.
+//! \param max Верхняя граница.
+//! \note Границы входя в область.
+//! \return Если входит в область, то true, иначе false.
+bool ValueIsBorded(int value, int min, int max)
+{
+    if (value >= min && value <= max)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+//! \brief Выводит одно из собщений в консоль по условию.
+//! \param condition Условие.
+//! \param trueMessage Сообщение, если true.
+//! \param falseMessage Сообщение, если false.
+void OutputWithCondition(bool condition, string trueMessage, string falseMessage)
+{
+    if (condition)
+    {
+        cout << trueMessage;
+    }
+    else
+    {
+        cout << falseMessage;
+    }
+}
+
+//TODO: comments +
+//! \brief Выполняет запрос по выбранной инструкции.
+//! \param choice Выбранная инструкция из выведенных.
+//! \param manualsIndexes Список с индексами выведенных инструкций.
+//! \param size Количество выведенных инструкций.
+//! \param dynamicArray Структура динамического массива.
+//! \param manuals Массив со всеми инструкциями.
+void RequestExecution(int choice, int* manualsIndexes, int size, DynamicArray*& dynamicArray, string* manuals)
+{
+    if (ValueIsBorded(choice, 0, size - 1))
     {
         cout << endl;
-        // TODO: Убрать указатель у простых типов данных
+        // TODO: Убрать указатель у простых типов данных +
         switch (manualsIndexes[choice])
         {
             case 0:
             {
+                //TODO: RSDN
                 int size;
-                int capacity;
+                InputWithMessage("Enter size of array: ", size);
 
-                cout << "Enter size of array: ";
-                cin >> size;
-                cout << "Enter capacity of array: ";
-                cin >> capacity;
+                //TODO: duplication
+                int capacity;
+                InputWithMessage("Enter capacity of array: ", capacity);
 
                 dynamicArray = CreateDynamicArray(size, capacity);
 
-                WriteArray();
+                WriteArray(dynamicArray);
                 cout << endl;
 
                 break;
             }
             case 1:
             {
-                WriteArray();
+                WriteArray(dynamicArray);
                 cout << endl;
 
                 break;
             }
             case 2:
             {
+                //TODO: duplication +
+
                 int index;
+                InputWithMessage("Enter index for new element(0-" +
+                    to_string(dynamicArray->Size) + "): ", index);
+
+                if (index > dynamicArray->Size || index < 0)
+                {
+                    cout << "Incorrect index\n";
+
+                    break;
+                }
+
                 int value;
+                InputWithMessage("Enter value for new element: ", value);
 
-                cout << "Enter index for new element(0-" << dynamicArray->Size << "): ";
-                cin >> index;
-                cout << "Enter value for new element: ";
-                cin >> value;
-
-                if (AddElement(dynamicArray, index, value))
-                {
-                    cout << "Element was added" << endl;
-                }
-                else
-                {
-                    cout << "Incorrect index" << endl;
-                }
+                AddElement(dynamicArray, index, value);
+                cout << "Element was added\n";
 
                 break;
             }
             case 3:
             {
+                int subManualsIndexes[] = {10, 11};
+                int numberOfManuals = sizeof(subManualsIndexes) /
+                                      sizeof(subManualsIndexes[0]);
+                WriteManual(manuals, subManualsIndexes, numberOfManuals);
                 int choice;
-                int* subManualsIndexes = new int[2] { 10, 11 };
-                int indexOrValue;
-
-                WriteManual(subManualsIndexes, 2);
                 cin >> choice;
-                cout << endl;
 
+                cout << endl;
                 switch (subManualsIndexes[choice])
                 {
                     case 10:
                     {
-                        cout << "Enter index of element for remove(0-" << dynamicArray->Size - 1 << "): ";
-                        cin >> indexOrValue;
-                        if (RemoveByIndex(dynamicArray, indexOrValue))
+                        int index;
+                        InputWithMessage("Enter index of element for remove(0-" +
+                            to_string(dynamicArray->Size - 1) + "): ", index);
+
+                        if (RemoveByIndex(dynamicArray, index))
                         {
-                            cout << "Element was removed" << endl;
+                            cout << "Element was removed\n";
                         }
                         else
                         {
-                            cout << "Incorrect index" << endl;
+                            cout << "Incorrect index\n";
                         }
 
                         break;
                     }
                     case 11:
                     {
-                        cout << "Enter the value for remove: ";
-                        cin >> indexOrValue;
-                        if (RemoveByValue(dynamicArray, indexOrValue))
+                        int value;
+                        InputWithMessage("Enter the value for remove: ", value);
+
+                        if (RemoveByValue(dynamicArray, value))
                         {
-                            cout << "Element was removed" << endl;
+                            cout << "Element was removed\n";
                         }
                         else
                         {
-                            cout << "Elements with this value was not found" << endl;
-                        }                     
+                            cout << "Elements with this value was not found\n";
+                        }
 
                         break;
                     }
                     default:
                     {
-                        cout << "Incorrect choice" << endl;
+                        cout << "Incorrect choice\n";
                     }
                 }
-
-                delete[] subManualsIndexes;
 
                 break;
             }
@@ -169,80 +221,75 @@ void RequestExecution(int choice, int* manualsIndexes, int size)
             case 6:
             {
                 int index;
-                cout << "Enter the index of element(0-" << dynamicArray->Size - 1 << "): ";
-                cin >> index;
+                InputWithMessage("Enter the index of element(0-" + to_string(dynamicArray->Size - 1) + "): ", index);
 
-                if (index < dynamicArray->Size && index >= 0)
+                if (ValueIsBorded(index, 0, dynamicArray->Size - 1))
                 {
                     cout << GetElement(dynamicArray, index) << endl;
                 }
                 else
                 {
-                    cout << "Incorrect index" << endl;
+                    cout << "Incorrect index\n";
                 }
 
                 break;
             }
             case 7:
             {
-                SortArray(dynamicArray);
-                WriteArray();
+                SortArrayShell(dynamicArray);
+                WriteArray(dynamicArray);
                 cout << endl;
 
                 break;
             }
             case 8:
             {
+                //TODO: refactor              
+                int subManualsIndexes[] = {12, 13};
+                int numberOfManuals = sizeof(subManualsIndexes) /
+                                      sizeof(subManualsIndexes[0]);
+                WriteManual(manuals, subManualsIndexes, numberOfManuals);
                 int choice;
-                int value;
-                int index = -2;
-                int* subManualsIndexes = new int[2] { 12, 13 };
-
-                WriteManual(subManualsIndexes, 2);
                 cin >> choice;
+
                 cout << endl;
-
-                switch (subManualsIndexes[choice])
+                if (ValueIsBorded(choice, 0, numberOfManuals - 1))
                 {
-                    delete[] subManualsIndexes;
+                    int value;
+                    int index;
 
-                    case 12:
+                    switch (subManualsIndexes[choice])
                     {
-                        cout << "Enter value for search: ";
-                        cin >> value;
-                        index = LinearSearch(dynamicArray, value);
+                        case 12:
+                        {
+                            //TODO: duplication +
+                            InputWithMessage("Enter value for search: ", value);
+                            index = LinearSearch(dynamicArray, value);
 
-                        break;
-                    }
-                    case 13:
-                    {
-                        cout << "Enter value for search: ";
-                        cin >> value;
-                        index = BinarySearch(dynamicArray, value);
+                            break;
+                        }
+                        case 13:
+                        {
+                            //TODO: duplication +
+                            InputWithMessage("Enter value for search: ", value);
+                            index = BinarySearch(dynamicArray, value);
 
-                        break;
+                            break;
+                        }
                     }
-                    default:
-                    {
-                        cout << "Incorrect choice" << endl;
 
-                        break;
-                    }
+                    string trueMessage = "Your value(" + to_string(value) + ") has index " + to_string(index) + '\n';
+                    OutputWithCondition(ValueIsBorded(index, 0, dynamicArray->Size - 1), trueMessage, "Not found\n");
                 }
-                if (index >= 0)
+                else
                 {
-                    cout << "Your value(" << value << ") has index " << index << endl;
-                }
-                else if (index == -1)
-                {
-                    cout << "Not found" << endl;
+                    cout << "Incorrect choice\n";
                 }
 
                 break;
             }
             case 9:
             {
-                delete[] manualsIndexes;
                 if (dynamicArray != nullptr)
                 {
                     delete[] dynamicArray->Array;
@@ -279,53 +326,61 @@ int main()
     cout << "Enter the number of task(1-2): ";
     cin >> number;
 
-    if (number == 1)
+    //TODO: switch-case +
+    switch (number)
     {
-        int n;
-        cpp_int factorial;
-
-        cout << "Enter value for factorial: ";
-        cin >> n;
-
-        if (n >= 0 && n <= 2500)
+        case 1:
         {
-            auto start = chrono::high_resolution_clock::now();
-            factorial = Factorial(n);
-            auto end = chrono::high_resolution_clock::now();
+            /*int n;
+            cpp_int factorial;
 
-            auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
+            cout << "Enter value for factorial: ";
+            cin >> n;
 
-            cout << factorial << " " << duration.count() << " microseconds" << endl;
-        }
-        else
-        {
-            cout << "Incorrect value";
-        }
-    }
-    else if (number == 2)
-    {
-        while (true)
-        {
-            int choice;
-            if (dynamicArray == nullptr)
+            if (n >= 0 && n <= 2500)
             {
-                int* manualsIndexes = new int[2] { 0, 9 };
+                auto start = chrono::high_resolution_clock::now();
+                factorial = Factorial(n);
+                auto end = chrono::high_resolution_clock::now();
 
-                WriteManual(manualsIndexes, 2);
-                cin >> choice;
+                auto duration = chrono::duration_cast<chrono::microseconds>(end - start);
 
-                RequestExecution(choice, manualsIndexes, 2);
-
-                delete[] manualsIndexes;
+                cout << factorial << " " << duration.count() << " microseconds" << endl;
             }
             else
             {
-                int* manualsIndexes = new int[10] { 1, 2, 3, 4, 5, 6, 7, 8, 14, 9 };
+                cout << "Incorrect value";
+            }*/
+        }
+        case 2:
+        {
+            string manuals[] = { "Create dynamic array\n", "Write array\n", "Add element\n",
+                     "Remove element\n", "Get size\n", "Get capacity\n", "Get element\n",
+                     "Sort array\n", "Search element\n", "Exit\n", "Remove by index\n",
+                     "Remove by value\n", "Linear search\n",
+                     "Binary search(for sorted array)\n", "Delete dynamic array\n" };
+            //TODO: глобальная область видимости - зло +
+            DynamicArray* dynamicArray = nullptr;
 
-                WriteManual(manualsIndexes, 10);
+            while (true)
+            {
+                int* manualsIndexes;
+                int size;
+                if (dynamicArray == nullptr)
+                {
+                    size = 2;
+                    manualsIndexes = new int[size] {0, 9};       
+                }
+                else
+                {
+                    size = 10;
+                    manualsIndexes = new int[size] {1, 2, 3, 4, 5, 6, 7, 8, 14, 9};
+                }
+                WriteManual(manuals, manualsIndexes, size);
+
+                int choice;
                 cin >> choice;
-
-                RequestExecution(choice, manualsIndexes, 10);
+                RequestExecution(choice, manualsIndexes, size, dynamicArray, manuals);
 
                 delete[] manualsIndexes;
             }

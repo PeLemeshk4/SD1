@@ -1,18 +1,24 @@
 #include <iostream>
-#include "C:\Users\User\Desktop\Структурка\Лаба 1\Header files\DynamicArray.h"
+#include "..\Header files\DynamicArray.h"
 
-void ResizeDynamicArray(DynamicArray* array, bool up)
+void ResizeDynamicArray(DynamicArray* array, bool isUpCapacity)
 {
-	int newCapacity;
+	int newCapacity = isUpCapacity
+		? array->Capacity * array->growthFactor
+		: array->Capacity / array->growthFactor;
 
-	if (up)
-	{
-		newCapacity = array->Capacity * 2;
-	}
-	else
-	{
-		newCapacity = array->Capacity / 2;
-	}
+	////TODO: rename +
+	//if (isUpCapacity)
+	//{
+	//	//TODO: const growthFactor +
+	//	newCapacity = array->Capacity * array->growthFactor;
+	//}
+	//else
+	//{
+	//	//TODO: const growthFactor +
+
+	//	newCapacity = array->Capacity / array->growthFactor;
+	//}
 
 	int* newArray = new int[newCapacity]();
 	for (int i = 0; i < array->Size; i++)
@@ -24,25 +30,23 @@ void ResizeDynamicArray(DynamicArray* array, bool up)
 	array->Array = newArray;
 }
 
-void CheckingCapacityOfDynamicArray(DynamicArray* array, int size)
+void CheckingCapacityOfDynamicArray(DynamicArray* array, int newSize)
 {
-	if (array->Capacity < size)
+	if (array->Capacity < newSize)
 	{
 		ResizeDynamicArray(array, true);
 	}
 	else
 	{
-		while (array->Capacity / 2 >= size and array->Capacity % 2 == 0)
+		//TODO: growthFactor +
+		while (array->Capacity / array->growthFactor >= newSize and
+			array->Capacity % array->growthFactor == 0)
 		{
 			ResizeDynamicArray(array, false);
 		}
 	}
 }
 
-//! \brief Добавляет элемент в массив.
-//! \param array Структура динамического массива.
-//! \param index Индекс элемента, куда нужно добавить элемент.
-//! \param value Значение элемента.
 bool AddElement(DynamicArray* array, int index, int value)
 {
 	CheckingCapacityOfDynamicArray(array, array->Size + 1);
@@ -86,9 +90,6 @@ DynamicArray* CreateDynamicArray(int size, int capacity)
 	return dynamicArray;
 }
 
-//! \brief Удаляет элемент массива по передаваемому индексу.
-//! \param array Структура динамического массива.
-//! \param index Индекс элемента, который нужно удалить.
 bool RemoveByIndex(DynamicArray* array, int index)
 {
 	if (index >= array->Size || index < 0)
@@ -99,7 +100,8 @@ bool RemoveByIndex(DynamicArray* array, int index)
 	{
 		if (index == array->Size - 1)
 		{
-			*(array->Array + index) = NULL;
+			//TODO: 0 +
+			*(array->Array + index) = 0;
 			array->Size--;
 		}
 		else if (index < array->Size)
@@ -130,9 +132,6 @@ bool CheckingValueInArray(int* array, int size, int value)
 	return false;
 }
 
-//! \brief Удаляет значение элемента по его передаваемому значению.
-//! \param array Структура динамического массива.
-//! \param value Посылаемое значение, которое нужно удалить.
 bool RemoveByValue(DynamicArray* array, int value)
 {
 	int i = 0;
@@ -158,16 +157,18 @@ bool RemoveByValue(DynamicArray* array, int value)
 	}
 }
 
-//! \brief Возвращает элемент по индексу.
-//! \param array Структура динамического массива.
-//! \param index Индекс, по которому нужно получить значение.
-//! \return Возвращает значение, которое находится под индексом.
 int GetElement(DynamicArray* array, int index)
 {
 	return *(array->Array + index);
 }
 
-int StepForShellSort(int size, int step = 1, int firstShellsNumber = 3, int secondShellsNumber = 1)
+//! \brief Находит максимальный шаг для сортировки Шелла по формуле Кнута.
+//! \param size Размер массива.
+//! \param firstShellsNumber Первая переменная формулы Кнута для сортировки Шелла (обычно 3).
+//! \param secondShellsNumber Вторая переменная формулы Кнута для сортировки Шелла (обычно 1).
+//! \param step Шаг для сортировки Шелла.
+//! \return Максимальный шаг для сортировки Шелла по формуле Кнута.
+int StepForShellSort(int size, int firstShellsNumber, int secondShellsNumber, int step = 1)
 {
 	int newStep = firstShellsNumber * step + secondShellsNumber;
 	if (newStep >= size)
@@ -176,7 +177,7 @@ int StepForShellSort(int size, int step = 1, int firstShellsNumber = 3, int seco
 	}
 	else
 	{
-		StepForShellSort(size, newStep);
+		StepForShellSort(size, firstShellsNumber, secondShellsNumber, newStep);
 	}
 }
 
@@ -196,12 +197,12 @@ void InsertionSort(int* array, int size)
 	}
 }
 
-//! \brief Сортирует массив.
-//! \param array Структура динамического массива.
-void SortArray(DynamicArray* array)
+void SortArrayShell(DynamicArray* array)
 {
-	for (int step = StepForShellSort(array->Size); step > 1;
-		step = (step - array->secondShellsNumber) / array->firstShellsNumber)
+	const int firstShellsNumber = 3;
+	const int secondShellsNumber = 1;
+	for (int step = StepForShellSort(array->Size, firstShellsNumber, secondShellsNumber); step > 1;
+		step = (step - secondShellsNumber) / firstShellsNumber)
 	{
 		for (int i = 0; i < step; i++)
 		{
@@ -231,9 +232,6 @@ void SortArray(DynamicArray* array)
 	InsertionSort(array->Array, array->Size);
 }
 
-//! \brief Линейный поиск индекса элемента по передаваемому значению.
-//! \param array Структура динамического массива.
-//! \param value Значение, индекс которого нужно найти.
 int LinearSearch(DynamicArray* array, int value)
 {
 	for (int i = 0; i < array->Size; i++)
@@ -247,9 +245,6 @@ int LinearSearch(DynamicArray* array, int value)
 	return -1;
 }
 
-//! \brief Бинарный поиск индекса элемента по передаваемому значению.
-//! \param array Структура динамического массива.
-//! \param value Значение, индекс которого нужно найти.
 int BinarySearch(DynamicArray* array, int value)
 {
 	int downBord = 0;
