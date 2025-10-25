@@ -2,13 +2,13 @@
 #include <string>
 #include "..\Header files\DynamicArray.h"
 #include <chrono>
-//#include <boost/multiprecision/cpp_int.hpp>
+#include <boost/multiprecision/cpp_int.hpp>
 
 using namespace std;
-//using namespace boost::multiprecision;
+using namespace boost::multiprecision;
 
 // 6 вариант
-/*cpp_int Factorial(int n)   //  Рекурсивная функция выполняется n раз => M(n) = O(n)
+cpp_int Factorial(int n)   //  Рекурсивная функция выполняется n раз => M(n) = O(n)
 {
     if (n == 0) // O(1)
     {
@@ -18,7 +18,7 @@ using namespace std;
     {
         return n * Factorial(n - 1); // O(1 + (n-1)) == O(n)
     }
-}*/
+}
 // T(n) = O(n)
 // M(n) = O(n)
 
@@ -108,11 +108,11 @@ void RequestExecution(int choice, int* manualsIndexes, int size, DynamicArray*& 
         {
             case 0:
             {
-                //TODO: RSDN
+                //TODO: RSDN +
                 int size;
                 InputWithMessage("Enter size of array: ", size);
 
-                //TODO: duplication
+                //TODO: duplication +
                 int capacity;
                 InputWithMessage("Enter capacity of array: ", capacity);
 
@@ -244,7 +244,7 @@ void RequestExecution(int choice, int* manualsIndexes, int size, DynamicArray*& 
             }
             case 8:
             {
-                //TODO: refactor              
+                //TODO: refactor +              
                 int subManualsIndexes[] = {12, 13};
                 int numberOfManuals = sizeof(subManualsIndexes) /
                                       sizeof(subManualsIndexes[0]);
@@ -331,7 +331,7 @@ int main()
     {
         case 1:
         {
-            /*int n;
+            int n;
             cpp_int factorial;
 
             cout << "Enter value for factorial: ";
@@ -350,7 +350,9 @@ int main()
             else
             {
                 cout << "Incorrect value";
-            }*/
+            }
+
+            break;
         }
         case 2:
         {
@@ -383,6 +385,8 @@ int main()
                 RequestExecution(choice, manualsIndexes, size, dynamicArray, manuals);
 
                 delete[] manualsIndexes;
+
+                break;
             }
         }
     }
